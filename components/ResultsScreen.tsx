@@ -9,10 +9,11 @@ interface ResultsScreenProps {
   onRestart: () => void
 }
 
-const RANK_LABELS = ['Primary Archetype', 'Strong Secondary', 'Complementary Influence']
-
 export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
-  const { topArchetypes, personalizedMessage, brandPersonalitySummary } = result
+  const { topArchetypes, personalizedMessage, brandPersonalitySummary, archetypeBlend, contentIdeas } = result
+
+  const primaryVisual = ARCHETYPE_VISUALS[topArchetypes[0]?.name] ?? ARCHETYPE_VISUALS['Sage']
+  const secondaryVisual = topArchetypes[1] ? (ARCHETYPE_VISUALS[topArchetypes[1].name] ?? ARCHETYPE_VISUALS['Sage']) : null
 
   return (
     <div className="min-h-screen px-6 py-16 relative overflow-hidden screen">
@@ -49,7 +50,7 @@ export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
           </div>
 
           <h1
-            className="font-serif mb-5 leading-tight"
+            className="font-serif mb-5 leading-tight font-semibold"
             style={{ fontSize: 'clamp(2rem, 5vw, 3.2rem)', color: '#fff' }}
           >
             {name}'s{' '}
@@ -144,7 +145,7 @@ export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
                           {archetype.resonanceLevel}
                         </div>
                         <h2
-                          className="font-serif"
+                          className="font-serif font-semibold"
                           style={{ fontSize: 'clamp(1.4rem, 3vw, 1.9rem)', color: '#fff', lineHeight: 1.2 }}
                         >
                           The {archetype.name}
@@ -290,12 +291,256 @@ export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
           })}
         </div>
 
+        {/* Archetype Blend Section */}
+        {archetypeBlend && secondaryVisual && (
+          <div
+            className="mt-10 rounded-2xl overflow-hidden animate-fade-up"
+            style={{
+              animationDelay: '0.6s',
+              animationFillMode: 'both',
+              background: 'var(--card)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            {/* Dual-color top bar */}
+            <div
+              className="h-1 w-full"
+              style={{
+                background: `linear-gradient(90deg, ${primaryVisual.accentColor}, ${secondaryVisual.accentColor})`,
+              }}
+            />
+
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-6">
+                <div
+                  className="flex items-center justify-center w-10 h-10 rounded-xl text-lg flex-shrink-0"
+                  style={{
+                    background: `linear-gradient(135deg, ${primaryVisual.gradientFrom}, ${secondaryVisual.gradientFrom})`,
+                    border: '1px solid rgba(255,255,255,0.1)',
+                  }}
+                >
+                  ⚡
+                </div>
+                <div>
+                  <div
+                    className="text-xs font-bold tracking-widest uppercase mb-0.5"
+                    style={{ color: 'var(--gold)', letterSpacing: '0.15em', opacity: 0.8 }}
+                  >
+                    Your Archetype Blend
+                  </div>
+                  <h2
+                    className="font-serif font-semibold"
+                    style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', color: '#fff' }}
+                  >
+                    {archetypeBlend.title}
+                  </h2>
+                </div>
+              </div>
+
+              {/* Archetype pill tags */}
+              <div className="flex gap-3 mb-6 flex-wrap">
+                <span
+                  className="px-3 py-1 rounded-full text-xs font-semibold"
+                  style={{
+                    background: `${primaryVisual.accentColor}15`,
+                    border: `1px solid ${primaryVisual.accentColor}40`,
+                    color: primaryVisual.accentColor,
+                  }}
+                >
+                  {topArchetypes[0]?.name}
+                </span>
+                <span style={{ color: 'var(--text-muted)', fontSize: '0.8rem', alignSelf: 'center' }}>+</span>
+                <span
+                  className="px-3 py-1 rounded-full text-xs font-semibold"
+                  style={{
+                    background: `${secondaryVisual.accentColor}15`,
+                    border: `1px solid ${secondaryVisual.accentColor}40`,
+                    color: secondaryVisual.accentColor,
+                  }}
+                >
+                  {topArchetypes[1]?.name}
+                </span>
+              </div>
+
+              {/* Description */}
+              <p
+                className="leading-relaxed mb-8"
+                style={{ color: 'rgba(255,255,255,0.78)', lineHeight: 1.8, fontSize: '0.97rem' }}
+              >
+                {archetypeBlend.description}
+              </p>
+
+              {/* Divider */}
+              <div
+                className="mb-6"
+                style={{ height: 1, background: 'rgba(255,255,255,0.06)' }}
+              />
+
+              {/* Strategies */}
+              <div>
+                <h3
+                  className="text-xs font-bold tracking-widest uppercase mb-4"
+                  style={{ color: 'var(--gold)', letterSpacing: '0.15em', opacity: 0.8 }}
+                >
+                  How to Activate This Combination
+                </h3>
+                <ul className="space-y-4">
+                  {archetypeBlend.strategies.map((strategy, i) => (
+                    <li key={i} className="flex items-start gap-4">
+                      <div
+                        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mt-0.5"
+                        style={{
+                          background: 'rgba(201,168,76,0.12)',
+                          border: '1px solid rgba(201,168,76,0.25)',
+                          color: 'var(--gold)',
+                        }}
+                      >
+                        {i + 1}
+                      </div>
+                      <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.9rem', lineHeight: 1.7 }}>
+                        {strategy}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Content Ideas Section */}
+        {contentIdeas && (
+          <div
+            className="mt-10 rounded-2xl overflow-hidden animate-fade-up"
+            style={{
+              animationDelay: '0.75s',
+              animationFillMode: 'both',
+              background: 'var(--card)',
+              border: '1px solid rgba(255,255,255,0.06)',
+            }}
+          >
+            {/* Top accent bar */}
+            <div
+              className="h-1 w-full"
+              style={{ background: 'linear-gradient(90deg, rgba(201,168,76,0.8), rgba(232,201,122,0.4), transparent)' }}
+            />
+
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex items-center gap-3 mb-8">
+                <div
+                  className="flex items-center justify-center w-10 h-10 rounded-xl text-lg flex-shrink-0"
+                  style={{
+                    background: 'rgba(201,168,76,0.12)',
+                    border: '1px solid rgba(201,168,76,0.2)',
+                  }}
+                >
+                  ✍️
+                </div>
+                <div>
+                  <div
+                    className="text-xs font-bold tracking-widest uppercase mb-0.5"
+                    style={{ color: 'var(--gold)', letterSpacing: '0.15em', opacity: 0.8 }}
+                  >
+                    Content Strategy
+                  </div>
+                  <h2
+                    className="font-serif font-semibold"
+                    style={{ fontSize: 'clamp(1.2rem, 2.5vw, 1.6rem)', color: '#fff' }}
+                  >
+                    Content Ideas for Your Brand
+                  </h2>
+                </div>
+              </div>
+
+              <div className="grid md:grid-cols-2 gap-8">
+                {/* Social Media */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div
+                      className="w-1 h-4 rounded-full"
+                      style={{ background: primaryVisual.accentColor }}
+                    />
+                    <h3
+                      className="text-xs font-bold tracking-widest uppercase"
+                      style={{ color: primaryVisual.accentColor, letterSpacing: '0.15em', opacity: 0.9 }}
+                    >
+                      Social Media Posts
+                    </h3>
+                  </div>
+                  <ul className="space-y-4">
+                    {contentIdeas.socialMedia.map((idea, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 p-4 rounded-xl"
+                        style={{
+                          background: `${primaryVisual.accentColor}06`,
+                          border: `1px solid ${primaryVisual.accentColor}15`,
+                        }}
+                      >
+                        <div
+                          className="flex-shrink-0 text-xs font-bold mt-0.5"
+                          style={{ color: primaryVisual.accentColor, minWidth: 18 }}
+                        >
+                          {i + 1}.
+                        </div>
+                        <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.88rem', lineHeight: 1.65 }}>
+                          {idea}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Blog Posts */}
+                <div>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div
+                      className="w-1 h-4 rounded-full"
+                      style={{ background: secondaryVisual?.accentColor ?? 'var(--gold)' }}
+                    />
+                    <h3
+                      className="text-xs font-bold tracking-widest uppercase"
+                      style={{ color: secondaryVisual?.accentColor ?? 'var(--gold)', letterSpacing: '0.15em', opacity: 0.9 }}
+                    >
+                      Blog Post Ideas
+                    </h3>
+                  </div>
+                  <ul className="space-y-4">
+                    {contentIdeas.blogPosts.map((idea, i) => (
+                      <li
+                        key={i}
+                        className="flex items-start gap-3 p-4 rounded-xl"
+                        style={{
+                          background: `${secondaryVisual?.accentColor ?? 'var(--gold)'}06`,
+                          border: `1px solid ${secondaryVisual?.accentColor ?? 'var(--gold)'}15`,
+                        }}
+                      >
+                        <div
+                          className="flex-shrink-0 text-xs font-bold mt-0.5"
+                          style={{ color: secondaryVisual?.accentColor ?? 'var(--gold)', minWidth: 18 }}
+                        >
+                          {i + 1}.
+                        </div>
+                        <span style={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.88rem', lineHeight: 1.65 }}>
+                          {idea}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Footer CTA */}
         <div
           className="text-center mt-16 pt-12 animate-fade-up"
           style={{
             borderTop: '1px solid rgba(201,168,76,0.1)',
-            animationDelay: '0.8s',
+            animationDelay: '0.9s',
             animationFillMode: 'both',
           }}
         >

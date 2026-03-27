@@ -35,7 +35,7 @@ export function QuestionCard({
   }
 
   return (
-    <div className="screen min-h-screen flex flex-col px-6 py-10 relative overflow-hidden">
+    <div className="screen min-h-screen flex flex-col items-center px-6 py-10 relative overflow-hidden">
       {/* Subtle bg glow */}
       <div
         className="absolute pointer-events-none"
@@ -91,9 +91,9 @@ export function QuestionCard({
         key={animKey}
         className="question-enter w-full max-w-2xl mx-auto flex-1 flex flex-col justify-center relative z-10"
       >
-        <div className="mb-10">
+        <div className="mb-10 text-center">
           <div
-            className="font-serif mb-4 leading-tight"
+            className="font-serif mb-4 leading-tight font-semibold"
             style={{ fontSize: 'clamp(1.5rem, 3.5vw, 2.1rem)', color: '#fff', lineHeight: 1.3 }}
           >
             {question.question}

@@ -7,8 +7,9 @@ export const maxDuration = 60
 
 export async function POST(req: NextRequest) {
   try {
-    const { name, answers, scores } = await req.json() as {
+    const { name, businessDescription, answers, scores } = await req.json() as {
       name: string
+      businessDescription: string
       answers: Array<{ question: string; chosen: string }>
       scores: ArchetypeScore[]
     }
@@ -23,14 +24,18 @@ export async function POST(req: NextRequest) {
 
     const prompt = `You are an expert brand strategist specializing in Jungian brand archetypes. You have deep knowledge of all 12 brand archetypes and how they manifest in business identity, marketing, and communication.
 
-A business owner named ${name} just completed a brand archetype quiz. Here are their answers:
+A business owner named ${name} just completed a brand archetype quiz.
 
+Here is how ${name} describes their business:
+"${businessDescription}"
+
+Here are their quiz answers:
 ${answersText}
 
 Their archetype score tally:
 ${scoresText}
 
-Based on these answers and scores, identify their top 2 or 3 dominant brand archetypes. Use the scores as a guide but use qualitative judgment from their actual answers — if two archetypes are close in score but the answers clearly lean one way, trust the answers.
+Based on these answers, scores, and business description, identify their top 2 or 3 dominant brand archetypes. Use the scores as a guide but use qualitative judgment from their actual answers and business context — if two archetypes are close in score but the answers and business clearly lean one way, trust the answers and context.
 
 Return ONLY valid JSON (no markdown, no explanation, just JSON) in exactly this structure:
 {
@@ -40,7 +45,7 @@ Return ONLY valid JSON (no markdown, no explanation, just JSON) in exactly this 
       "rank": 1,
       "resonanceLevel": "Primary Archetype",
       "tagline": "a short 5-8 word brand tagline for this archetype",
-      "personalizedDescription": "2-3 sentences specifically personalized to ${name}'s answers, describing how THIS archetype shows up in their brand identity. Be specific and insightful, not generic.",
+      "personalizedDescription": "2-3 sentences specifically personalized to ${name}'s business and answers — describe how THIS archetype shows up in their specific work, who they serve, and what they do. Reference their actual business context. Be specific and insightful, not generic.",
       "characteristics": [
         "characteristic 1 (7-12 words)",
         "characteristic 2 (7-12 words)",
@@ -49,27 +54,56 @@ Return ONLY valid JSON (no markdown, no explanation, just JSON) in exactly this 
         "characteristic 5 (7-12 words)"
       ],
       "businessTips": [
-        "Actionable tip 1 specific to their archetype (15-25 words)",
-        "Actionable tip 2 specific to their archetype (15-25 words)",
-        "Actionable tip 3 specific to their archetype (15-25 words)",
-        "Actionable tip 4 specific to their archetype (15-25 words)"
+        "Actionable tip 1 specific to their industry and archetype (15-25 words)",
+        "Actionable tip 2 specific to their industry and archetype (15-25 words)",
+        "Actionable tip 3 specific to their industry and archetype (15-25 words)",
+        "Actionable tip 4 specific to their industry and archetype (15-25 words)"
       ],
-      "voiceExample": "A single example sentence showing how this archetype speaks directly to customers (20-30 words)",
+      "voiceExample": "A single example sentence showing how this archetype speaks directly to ${name}'s specific target audience (20-30 words)",
       "famousBrands": ["Brand 1", "Brand 2", "Brand 3"]
     }
   ],
-  "personalizedMessage": "2-3 sentences addressed directly to ${name}, affirming their unique brand combination and what makes it powerful. Be warm, specific, and inspiring.",
-  "brandPersonalitySummary": "One vivid sentence (max 20 words) describing ${name}'s overall brand personality blend."
+  "personalizedMessage": "2-3 sentences addressed directly to ${name}, affirming their unique brand combination and what makes it powerful given their specific business. Be warm, specific, and inspiring.",
+  "brandPersonalitySummary": "One vivid sentence (max 20 words) describing ${name}'s overall brand personality blend in the context of their work.",
+  "archetypeBlend": {
+    "title": "A compelling 4-6 word title describing how ${name}'s top two archetypes merge (e.g. 'The Transformative Guide', 'The Rebellious Expert')",
+    "description": "3-4 sentences explaining how ${name}'s top two archetypes work powerfully together in their specific business context. Explain the unique tension and synergy, what it means for their brand identity, and why this combination is especially powerful for their audience and industry.",
+    "strategies": [
+      "Strategy 1: A specific way ${name} can activate both archetypes together in their brand or marketing (20-30 words)",
+      "Strategy 2: A specific way ${name} can activate both archetypes together in their brand or messaging (20-30 words)",
+      "Strategy 3: A specific way ${name} can activate both archetypes together in their customer experience (20-30 words)",
+      "Strategy 4: A specific way ${name} can activate both archetypes together in their content or offers (20-30 words)"
+    ]
+  },
+  "contentIdeas": {
+    "socialMedia": [
+      "Post idea 1 — specific social media post concept tailored to ${name}'s industry and archetypes (describe the angle, hook, and why it fits their brand — 20-30 words)",
+      "Post idea 2 — specific social media post concept (20-30 words)",
+      "Post idea 3 — specific social media post concept (20-30 words)",
+      "Post idea 4 — specific social media post concept (20-30 words)",
+      "Post idea 5 — specific social media post concept (20-30 words)"
+    ],
+    "blogPosts": [
+      "Blog post title + one-sentence description of angle, tailored to ${name}'s audience and archetypes (20-30 words)",
+      "Blog post title + one-sentence description (20-30 words)",
+      "Blog post title + one-sentence description (20-30 words)",
+      "Blog post title + one-sentence description (20-30 words)"
+    ]
+  }
 }
 
 For the second archetype, use "rank": 2 and "resonanceLevel": "Strong Secondary". If including a third, use "rank": 3 and "resonanceLevel": "Complementary Influence".
 
-Only include a third archetype if it scored meaningfully and adds distinct value to the profile. Two well-developed archetypes are better than three shallow ones.`
+Only include a third archetype if it scored meaningfully and adds distinct value to the profile. Two well-developed archetypes are better than three shallow ones.
+
+The archetypeBlend section should always reference the top two archetypes specifically by name and relate everything back to ${name}'s actual business context.
+
+All content ideas must be specific to ${name}'s industry and target audience — not generic marketing advice.`
 
     const { text } = await generateText({
       model: openai('gpt-4.1'),
       prompt,
-      maxTokens: 2500,
+      maxTokens: 3500,
     })
 
     // Extract JSON from the response

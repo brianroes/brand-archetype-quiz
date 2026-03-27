@@ -3,18 +3,22 @@
 import { useState } from 'react'
 
 interface WelcomeScreenProps {
-  onStart: (name: string) => void
+  onStart: (name: string, businessDescription: string) => void
 }
 
 export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
   const [name, setName] = useState('')
+  const [businessDescription, setBusinessDescription] = useState('')
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
-    const trimmed = name.trim()
-    if (trimmed.length < 2) return
-    onStart(trimmed)
+    const trimmedName = name.trim()
+    const trimmedDesc = businessDescription.trim()
+    if (trimmedName.length < 2 || trimmedDesc.length < 10) return
+    onStart(trimmedName, trimmedDesc)
   }
+
+  const canSubmit = name.trim().length >= 2 && businessDescription.trim().length >= 10
 
   return (
     <div className="screen min-h-screen flex flex-col items-center justify-center px-6 py-16 relative overflow-hidden">
@@ -70,7 +74,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           </div>
 
           <h1
-            className="font-serif mb-6 leading-tight"
+            className="font-serif mb-6 leading-tight font-semibold"
             style={{ fontSize: 'clamp(2.4rem, 6vw, 4rem)', color: '#fff' }}
           >
             Discover Your{' '}
@@ -114,7 +118,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
           ))}
         </div>
 
-        {/* Name form */}
+        {/* Form */}
         <form onSubmit={handleSubmit} className="animate-stagger-3">
           <div
             className="p-8 rounded-2xl glow-card"
@@ -124,6 +128,7 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
               backdropFilter: 'blur(12px)',
             }}
           >
+            {/* Name field */}
             <label
               htmlFor="name"
               className="block mb-3 font-semibold text-sm tracking-widest uppercase"
@@ -142,9 +147,34 @@ export function WelcomeScreen({ onStart }: WelcomeScreenProps) {
               autoFocus
             />
 
+            {/* Business description field */}
+            <label
+              htmlFor="businessDescription"
+              className="block mb-3 font-semibold text-sm tracking-widest uppercase"
+              style={{ color: 'var(--gold)', letterSpacing: '0.15em' }}
+            >
+              Describe Your Business
+            </label>
+            <p
+              className="mb-3 text-sm"
+              style={{ color: 'var(--text-muted)', lineHeight: 1.6 }}
+            >
+              Tell us what you do, who you help, what your role is, and who your target audience is.
+              The more specific you are, the more personalized your results will be.
+            </p>
+            <textarea
+              id="businessDescription"
+              value={businessDescription}
+              onChange={(e) => setBusinessDescription(e.target.value)}
+              placeholder="Example: I'm a business coach who helps women entrepreneurs in their 30s–50s build profitable online coaching businesses. My clients are professionals leaving corporate careers who want more freedom and impact. I help them develop their offer, brand, and marketing strategy."
+              className="gold-input mb-6"
+              rows={5}
+              style={{ resize: 'vertical', minHeight: 120 }}
+            />
+
             <button
               type="submit"
-              disabled={name.trim().length < 2}
+              disabled={!canSubmit}
               className="btn-primary w-full"
             >
               Begin My Brand Journey

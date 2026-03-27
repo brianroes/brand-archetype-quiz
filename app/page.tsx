@@ -35,12 +35,14 @@ export default function Page() {
   const [result, setResult] = useState<AnalysisResult | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  // Canonical ref so handleAnswer always reads settled state, not a stale closure
+  // Canonical refs so callbacks always read settled state, not stale closures
   const selectedOptionsRef = useRef<number[]>([])
   const nameRef = useRef('')
+  const businessDescriptionRef = useRef('')
 
-  const handleStart = useCallback((enteredName: string) => {
+  const handleStart = useCallback((enteredName: string, enteredDescription: string) => {
     nameRef.current = enteredName
+    businessDescriptionRef.current = enteredDescription
     setName(enteredName)
     setCurrentQ(0)
     selectedOptionsRef.current = []
@@ -75,7 +77,7 @@ export default function Page() {
         const res = await fetch('/api/analyze', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ name: nameRef.current, answers, scores }),
+          body: JSON.stringify({ name: nameRef.current, businessDescription: businessDescriptionRef.current, answers, scores }),
         })
 
         if (!res.ok) {
@@ -120,6 +122,7 @@ export default function Page() {
     setPhase('welcome')
     setName('')
     nameRef.current = ''
+    businessDescriptionRef.current = ''
     setCurrentQ(0)
     selectedOptionsRef.current = []
     setSelectedOptions([])

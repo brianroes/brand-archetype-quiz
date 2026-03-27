@@ -29,10 +29,23 @@ export interface ArchetypeResult {
   famousBrands: string[]
 }
 
+export interface ArchetypeBlend {
+  title: string
+  description: string
+  strategies: string[]
+}
+
+export interface ContentIdeas {
+  socialMedia: string[]
+  blogPosts: string[]
+}
+
 export interface AnalysisResult {
   topArchetypes: ArchetypeResult[]
   personalizedMessage: string
   brandPersonalitySummary: string
+  archetypeBlend?: ArchetypeBlend
+  contentIdeas?: ContentIdeas
 }
 
 export interface ArchetypeVisual {
