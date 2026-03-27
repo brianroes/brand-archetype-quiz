@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import { ARCHETYPE_VISUALS } from '@/lib/archetypes'
 import type { AnalysisResult } from '@/lib/types'
 
@@ -12,11 +13,92 @@ interface ResultsScreenProps {
 export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
   const { topArchetypes, personalizedMessage, brandPersonalitySummary, archetypeBlend, contentIdeas } = result
 
+  const [heroImageUrl, setHeroImageUrl] = useState<string | null>(null)
+  const [imageLoading, setImageLoading] = useState(true)
+
+  useEffect(() => {
+    const primaryArchetype = topArchetypes[0]?.name
+    if (!primaryArchetype) return
+
+    fetch('/api/generate-image', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ archetype: primaryArchetype }),
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data.imageUrl) setHeroImageUrl(data.imageUrl)
+      })
+      .catch(err => console.error('Hero image fetch failed:', err))
+      .finally(() => setImageLoading(false))
+  }, [topArchetypes])
+
   const primaryVisual = ARCHETYPE_VISUALS[topArchetypes[0]?.name] ?? ARCHETYPE_VISUALS['Sage']
   const secondaryVisual = topArchetypes[1] ? (ARCHETYPE_VISUALS[topArchetypes[1].name] ?? ARCHETYPE_VISUALS['Sage']) : null
 
   return (
-    <div className="min-h-screen px-6 py-16 relative overflow-hidden screen">
+    <div className="min-h-screen relative overflow-hidden screen">
+
+      {/* Hero Image */}
+      <div
+        className="relative w-full overflow-hidden"
+        style={{ height: 'clamp(220px, 40vw, 420px)' }}
+      >
+        {imageLoading && (
+          <div
+            className="absolute inset-0 flex items-center justify-center"
+            style={{ background: 'linear-gradient(180deg, rgba(17,17,32,0.6) 0%, var(--bg) 100%)' }}
+          >
+            <div className="flex flex-col items-center gap-3">
+              <div
+                className="w-8 h-8 rounded-full border-2 border-t-transparent animate-spin"
+                style={{ borderColor: 'rgba(201,168,76,0.4)', borderTopColor: 'transparent' }}
+              />
+              <span style={{ color: 'rgba(201,168,76,0.5)', fontSize: '0.75rem', letterSpacing: '0.12em' }}>
+                GENERATING YOUR BRAND IMAGE
+              </span>
+            </div>
+          </div>
+        )}
+
+        {heroImageUrl && (
+          <>
+            <img
+              src={heroImageUrl}
+              alt={`${topArchetypes[0]?.name} brand archetype hero`}
+              className="absolute inset-0 w-full h-full object-cover"
+              style={{ opacity: 0.85 }}
+            />
+            {/* Gradient overlay so content below reads cleanly */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(17,17,32,0.15) 0%, rgba(17,17,32,0.55) 60%, var(--bg) 100%)',
+              }}
+            />
+          </>
+        )}
+
+        {/* Archetype name overlay on image */}
+        {heroImageUrl && topArchetypes[0] && (
+          <div className="absolute bottom-6 left-0 right-0 flex justify-center">
+            <div
+              className="px-5 py-2 rounded-full text-xs font-bold tracking-widest uppercase"
+              style={{
+                background: 'rgba(0,0,0,0.45)',
+                border: `1px solid ${primaryVisual.accentColor}40`,
+                color: primaryVisual.accentColor,
+                backdropFilter: 'blur(8px)',
+                letterSpacing: '0.18em',
+              }}
+            >
+              The {topArchetypes[0].name}
+            </div>
+          </div>
+        )}
+      </div>
+
+      <div className="px-6 py-16 relative overflow-hidden">
       {/* Background glow */}
       <div
         className="absolute pointer-events-none"
@@ -581,6 +663,7 @@ export function ResultsScreen({ name, result, onRestart }: ResultsScreenProps) {
             Retake the Quiz
           </button>
         </div>
+      </div>
       </div>
     </div>
   )
