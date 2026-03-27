@@ -1,0 +1,337 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bg: #07070F;
+  --surface: #0D0D1A;
+  --card: #111120;
+  --gold: #C9A84C;
+  --gold-light: #E8C97A;
+  --gold-dim: rgba(201, 168, 76, 0.2);
+  --border: rgba(201, 168, 76, 0.12);
+  --text: #FFFFFF;
+  --text-muted: #7A7A99;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-inter), system-ui, sans-serif;
+  min-height: 100vh;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar ──────────────────────────────── */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: var(--gold-dim); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+/* ── Selection ──────────────────────────────── */
+::selection {
+  background: rgba(201, 168, 76, 0.25);
+  color: #fff;
+}
+
+/* ── Screen transitions ─────────────────────── */
+.screen {
+  animation: screenEnter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.screen-exit {
+  animation: screenExit 0.3s ease-in both;
+}
+
+@keyframes screenEnter {
+  from {
+    opacity: 0;
+    transform: translateY(28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes screenExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-16px);
+  }
+}
+
+/* ── Question slide-in ──────────────────────── */
+.question-enter {
+  animation: questionEnter 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes questionEnter {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ── Stagger children ───────────────────────── */
+.stagger > *:nth-child(1) { animation-delay: 0.05s; }
+.stagger > *:nth-child(2) { animation-delay: 0.12s; }
+.stagger > *:nth-child(3) { animation-delay: 0.19s; }
+.stagger > *:nth-child(4) { animation-delay: 0.26s; }
+
+/* ── Gold gradient text ─────────────────────── */
+.text-gold-gradient {
+  background: linear-gradient(135deg, #C9A84C 0%, #E8C97A 50%, #C9A84C 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gold-shimmer {
+  background: linear-gradient(90deg, #8B6F2A 0%, #C9A84C 30%, #E8C97A 50%, #C9A84C 70%, #8B6F2A 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmerText 3s linear infinite;
+}
+
+@keyframes shimmerText {
+  0% { background-position: -200% center; }
+  100% { background-position: 200% center; }
+}
+
+/* ── Noise texture overlay ──────────────────── */
+.noise-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.4;
+}
+
+/* ── Radial glow ────────────────────────────── */
+.glow-gold {
+  box-shadow: 0 0 60px rgba(201, 168, 76, 0.12), 0 0 120px rgba(201, 168, 76, 0.05);
+}
+
+.glow-card {
+  box-shadow:
+    0 1px 0 0 rgba(201, 168, 76, 0.15) inset,
+    0 0 40px rgba(0, 0, 0, 0.4),
+    0 4px 24px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Option button ──────────────────────────── */
+.option-btn {
+  position: relative;
+  background: rgba(17, 17, 32, 0.6);
+  border: 1px solid rgba(201, 168, 76, 0.1);
+  border-radius: 12px;
+  padding: 18px 24px;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  overflow: hidden;
+  width: 100%;
+}
+
+.option-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(201, 168, 76, 0.08) 0%, transparent 60%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.option-btn:hover::before {
+  opacity: 1;
+}
+
+.option-btn:hover {
+  border-color: rgba(201, 168, 76, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(201, 168, 76, 0.2);
+}
+
+.option-btn.selected {
+  border-color: rgba(201, 168, 76, 0.7);
+  background: rgba(201, 168, 76, 0.08);
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.4), 0 0 24px rgba(201, 168, 76, 0.12);
+}
+
+.option-btn.selected::before {
+  opacity: 1;
+}
+
+/* ── Archetype card ─────────────────────────── */
+.archetype-card {
+  position: relative;
+  background: var(--card);
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.archetype-card:hover {
+  transform: translateY(-4px);
+}
+
+/* ── Analyzing orb ──────────────────────────── */
+@keyframes orbPulse {
+  0%, 100% { transform: scale(1); opacity: 0.6; }
+  50% { transform: scale(1.15); opacity: 1; }
+}
+
+@keyframes orbRotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes floatY {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-14px); }
+}
+
+@keyframes dots {
+  0%, 20% { content: '.'; }
+  40% { content: '..'; }
+  60%, 100% { content: '...'; }
+}
+
+/* ── Progress bar ───────────────────────────── */
+.progress-track {
+  height: 2px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #8B6F2A, #C9A84C, #E8C97A);
+  border-radius: 99px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  top: -3px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #E8C97A;
+  box-shadow: 0 0 8px rgba(232, 201, 122, 0.8);
+}
+
+/* ── Input ──────────────────────────────────── */
+.gold-input {
+  background: rgba(17, 17, 32, 0.8);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 1.125rem;
+  padding: 14px 20px;
+  width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  outline: none;
+  font-family: inherit;
+}
+
+.gold-input:focus {
+  border-color: rgba(201, 168, 76, 0.6);
+  box-shadow: 0 0 0 3px rgba(201, 168, 76, 0.08), 0 0 16px rgba(201, 168, 76, 0.1);
+}
+
+.gold-input::placeholder {
+  color: rgba(122, 122, 153, 0.6);
+}
+
+/* ── Button ─────────────────────────────────── */
+.btn-primary {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, #8B6F2A, #C9A84C, #E8C97A, #C9A84C);
+  background-size: 200% auto;
+  color: #0A0A12;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 16px 40px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background-position 0.4s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: 0 4px 24px rgba(201, 168, 76, 0.3);
+  overflow: hidden;
+}
+
+.btn-primary:hover {
+  background-position: right center;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(201, 168, 76, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Badge ──────────────────────────────────── */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ── Bg particles ───────────────────────────── */
+.particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: floatY var(--duration, 6s) ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
