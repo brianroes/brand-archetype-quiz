@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateText } from 'ai'
-import { anthropic } from '@ai-sdk/anthropic'
+import { openai } from '@ai-sdk/openai'
 import type { ArchetypeScore } from '@/lib/types'
 
 export const maxDuration = 60
@@ -67,7 +67,7 @@ For the second archetype, use "rank": 2 and "resonanceLevel": "Strong Secondary"
 Only include a third archetype if it scored meaningfully and adds distinct value to the profile. Two well-developed archetypes are better than three shallow ones.`
 
     const { text } = await generateText({
-      model: anthropic('claude-opus-4.5'),
+      model: openai('gpt-4.1'),
       prompt,
       maxTokens: 2500,
     })
